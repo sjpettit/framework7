@@ -8,13 +8,16 @@ Framework7
 
 Full Featured HTML Framework For Building iOS7 Apps
 
-## Attention!
+## Build
 
-Framework7 is on early development stage, so many things may be changed and sorted in a short time.
+Framework7 uses `grunt` to build a development (build) and dist versions.
 
-## Getting Started
-  * Clone/download this repo
-  * Start building your App from changing Kitchen Sink, or from a clean template from `dist/` folder
+First you need to have `grunt-cli` which you should install globally.
+
+```
+$ npm install -g grunt-cli
+```
+
 
 ## Server
 
@@ -37,15 +40,6 @@ Framework7' JS and CSS files in Kitchen Sink are temporary linked to `build/` to
 
 On production use files (JS and CSS) only from `dist/` folder, there will be the most stable versions, `build/` folder is only for development purpose
 
-## Build
-
-Framework7 uses `grunt` to build a development (build) and dist versions.
-
-First you need to have `grunt-cli` which you should install globally.
-
-```
-$ npm install -g grunt-cli
-```
 
 Then install all dependencies, in repo's root:
 
