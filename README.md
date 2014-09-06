@@ -107,3 +107,13 @@ Tutorials available at http://idangero.us/framework7/tutorials/
 ## Showcase
 
 Appstore apps made with Framework7: http://idangero.us/framework7/showcase/
+
+## Plan:
+Person 1:
+General
+Notes
+Attachments
+
+Person 2:
+Occupancy
+Property Information
