@@ -1,3 +1,23 @@
+
+.index-page{
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-image: url("../img/Background_11_by_ELENADUDINA.jpg");
+  -webkit-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  opacity: 1;
+  -webkit-box-shadow: none;
+  box-shadow: none;   
+}
+
 .panel {
   background: #222;
   color: #dddddd;
