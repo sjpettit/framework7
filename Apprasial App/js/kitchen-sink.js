@@ -27,8 +27,7 @@ $$(document).on('ajaxComplete', function () {
 
 
 
-       myApp.modalLogin('Enter your username and password', 'Login: ',function (username, password) {
-            myApp.alert('Thank you! Username: ' + username + ', password: ' + password);
+       myApp.modalLogin('Enter your username and password', 'Login: ',function (username, password) {         
             /*xhr.simpleCall({
                     func:'user_login',
                     data:{
@@ -41,7 +40,7 @@ $$(document).on('ajaxComplete', function () {
 
                             //var login = response.data;
                             //GS.setCurrentUser(login.sid,login.user);
-                           */ mainView.loadPage('tabs.html');
+                           */ mainView.loadPage('test.html');
                             //myApp.hidePreloader();
                        /* }else{
                             myApp.hidePreloader();
