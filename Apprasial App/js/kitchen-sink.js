@@ -5,9 +5,16 @@ var myApp = new Framework7({
 });
 // Expose Internal DOM library
 var $$ = Dom7;
-//Declare user tracking variable
+//Declare global tracking variables
 var userKey;
 var orderArray;
+var geocodeData;
+var zipObjects;
+var cityObjects;
+var stateObjects;
+var type;
+var currentOrderArray;
+
 //initalize login
 login();
 // Add main view
@@ -71,7 +78,136 @@ function getCityObjects(orderArr){
   return cityObjectArray;
 }
 
-myApp.onPageInit('searchbar', function(page) {
+
+  $$(document).on('click', '.load-orders', function(e){
+          
+
+                    leftView.loadPage('order-page.html');
+                    mainView.loadPage('map-page.html');
+                    if(type == 'zip'){
+                    var ordersToLoad = zipObjects[this.id].zipOrderArray;
+                    console.log(ordersToLoad);
+                    loadOrders(ordersToLoad);
+                    console.log("zip");
+                    }else if(type == 'state'){
+                    console.log("state");
+                    var ordersToLoad = stateObjects[this.id].stateOrderArray;
+                    console.log(ordersToLoad);
+                    loadOrders(ordersToLoad);
+                    }else if(type == 'city'){
+                    console.log("city");
+                    var ordersToLoad = cityObjects[this.id].cityOrderArray;
+                    console.log(ordersToLoad);
+                    loadOrders(ordersToLoad);
+                    }
+                    currentOrderArray = ordersToLoad;
+                    
+  });
+
+
+function loadOrders(ordersToLoad){
+
+myApp.onPageAfterAnimation('order-page', function(page) {
+      $('#order-list').html("");
+                    for(var i = 0;i<ordersToLoad.length;i++){
+                      $('#order-list').append(               
+                        "<li>"+
+                        "<div id="+i+" class=\"item-content item-link show-marker\">"+
+                          "<div class=\"item-inner\">"+
+                                "<div class=\"item-title\"> Order "+ordersToLoad[i].orderID+"</div>"+ 
+                                " <div class=\"order-ammount\">  Due Date:"+ordersToLoad[i].order_due_date+
+                            "</div>"+
+                          "</div>"+    
+                        "</li>"
+                      )
+                    
+                      }
+});
+}
+
+$$('.back').on('click', function() {
+  leftView.goBack();
+});
+
+
+  $$(document).on('click', '.show-marker', function(e){
+    var currentOrder = currentOrderArray[this.id];
+    console.log(currentOrder.order_addres+", "+currentOrder.city+", "+currentOrder.state);
+
+      $.ajax({
+          url: 'https://maps.googleapis.com/maps/api/geocode/json?address='+currentOrder.order_addres+", "+currentOrder.city+", "+currentOrder.state+'&key=AIzaSyBjm_gt77HZ8-aFj8DvnnVqTOyg54fNMFU',
+            beforeSend: function(xhr) {
+                myApp.showPreloader();
+                xhr.overrideMimeType("text/plain; charset=x-user-defined");
+            }
+      }).done(function(data) {
+            myApp.hidePreloader();
+            geocodeData = JSON.parse(data).results;
+            console.log(geocodeData[0].geometry.location.lat+", "+geocodeData[0].geometry.location.lng);
+        }).fail(function(err) {
+           myApp.hidePreloader();
+           console.log('error: '+err);
+           //TODO add error function
+        });
+  });
+
+
+myApp.onPageAfterAnimation('map-page', function(page) {
+console.log("map");
+
+
+
+var x = document.getElementById("demo");
+    function getLocation() {
+      if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(showPosition,showError);
+      } else {
+          x.innerHTML = "Geolocation is not supported by this browser.";
+      }
+    }
+    
+    function showError(error) {
+      switch(error.code) {
+          case error.PERMISSION_DENIED:
+              x.innerHTML = "User denied the request for Geolocation."
+              break;
+          case error.POSITION_UNAVAILABLE:
+              x.innerHTML = "Location information is unavailable."
+              break;
+          case error.TIMEOUT:
+              x.innerHTML = "The request to get user location timed out."
+              break;
+          case error.UNKNOWN_ERROR:
+              x.innerHTML = "An unknown error occurred."
+              break;
+      }
+    }
+    function showPosition(position){ 
+        console.log(position);
+        var mapOptions = {
+          center: { lat: position.coords.latitude, lng: position.coords.longitude},
+          zoom: 15
+        };
+        console.log(document.getElementById('map-canvas'));
+        var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+        var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+
+        var marker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            title: 'Hello World!'
+        });
+        myApp.hidePreloader();
+     }
+
+      myApp.showPreloader();
+      getLocation();
+
+});
+
+
+
+myApp.onPageInit('order-search', function(page) {
     // Add views
     
     document.getElementById('view-left').className = "view view-left navbar-through toolbar-through"
@@ -90,15 +226,22 @@ myApp.onPageInit('searchbar', function(page) {
             orderArray = JSON.parse(data).data;
             if(orderArray.length>0){
               $(".welcome").html("Welcome, "+orderArray[0].order_party_name);
+              
+              
+              
               $("#state").change(function(event){
                 if(!this.checked && !$('#zip').checked && !$('#city').checked){
                   $('#group-list').html("");
                 }
                 if(this.checked){
+                  console.log(this);
                   $('#city').attr('checked', false);
                   $('#zip').attr('checked', false);
                   $('#group-list').html("");
-                  var stateObjects = getStateObjects(orderArray);
+                  console.log("State: " +this.checked);
+                  console.log("zip: " +$('#zip').checked);
+                  console.log("city: " +$('#city').checked);
+                  stateObjects = getStateObjects(orderArray);
                   console.log(stateObjects);
                   for(var i = 0; i<stateObjects.length;i++){
                     var pluralityString;
@@ -108,8 +251,8 @@ myApp.onPageInit('searchbar', function(page) {
                       pluralityString = " Order";
                     }
                     $('#group-list').append(               
-                      "<li>"+
-                      "<div id="+i+" class=\"item-content item-link\">"+
+                      "<li class=\"order-button\">"+
+                      "<div id="+i+" class=\"item-content item-link load-orders\">"+
                           "<div class=\"item-inner\">"+
                                 "<div class=\"item-title\">"+stateObjects[i].state+"</div>"+ 
                                 "<div class=\"order-ammount\">"+stateObjects[i].stateOrderArray.length+
@@ -118,6 +261,7 @@ myApp.onPageInit('searchbar', function(page) {
                         "</div>"+    
                       "</li>")
                   }
+                type='state';
               }
               });
               $("#city").change(function(event){
@@ -125,10 +269,14 @@ myApp.onPageInit('searchbar', function(page) {
                   $('#group-list').html("");
                 }
                 if(this.checked){
+                  console.log(this);
                   $('#state').attr('checked', false);
                   $('#zip').attr('checked', false);
+                  console.log("State: " +$('#state').checked);
+                  console.log("zip: " +$('#zip').checked);
+                  console.log("city: " +this.checked);
                   $('#group-list').html("");
-                  var cityObjects = getCityObjects(orderArray);
+                  cityObjects = getCityObjects(orderArray);
                   console.log(cityObjects);
                   for(var i = 0; i<cityObjects.length;i++){
                     var pluralityString;
@@ -139,7 +287,7 @@ myApp.onPageInit('searchbar', function(page) {
                     }
                     $('#group-list').append(               
                       "<li>"+
-                      "<div id="+i+" class=\"item-content item-link\">"+
+                      "<div id="+i+" class=\"item-content item-link load-orders\">"+
                           "<div class=\"item-inner\">"+
                                 "<div class=\"item-title\">"+cityObjects[i].city+"</div>"+ 
                                 "<div class=\"order-ammount\">"+cityObjects[i].cityOrderArray.length+
@@ -148,18 +296,23 @@ myApp.onPageInit('searchbar', function(page) {
                         "</div>"+    
                       "</li>")
                   }
+                  type='city';
               }
                
               });
               $("#zip").change(function(event){
+                console.log(this);
                 if(!this.checked && !$('#state').checked && !$('#city').checked){
                   $('#group-list').html("");
                 }
                 if(this.checked){
                   $('#city').attr('checked', false);
                   $('#state').attr('checked', false);
+                  console.log("State: " +$('#state').checked);
+                  console.log("zip: " +this.checked);
+                  console.log("city: " +$('#city').checked);
                   $('#group-list').html("");
-                  var zipObjects = getZipObjects(orderArray);
+                  zipObjects = getZipObjects(orderArray);
                   console.log(zipObjects);
                   for(var i = 0; i<zipObjects.length;i++){
                     var pluralityString;
@@ -170,15 +323,17 @@ myApp.onPageInit('searchbar', function(page) {
                     }
                     $('#group-list').append(               
                       "<li>"+
-                      "<div id="+i+" class=\"item-content item-link\">"+
+                      "<div id="+i+" class=\"item-content item-link load-orders\">"+
                           "<div class=\"item-inner\">"+
                                 "<div class=\"item-title\">"+zipObjects[i].zip+"</div>"+ 
                                 "<div class=\"order-ammount\">"+zipObjects[i].zipOrderArray.length+
                                 pluralityString+" Found<\div>"+
                           "</div>"+
                         "</div>"+    
-                      "</li>")
+                      "</li>"
+                    )
                   }
+                  type='zip';
               }
                
               })
@@ -239,6 +394,9 @@ function login() {
                 myApp.hidePreloader();
                 mainView.loadPage('main-page-1.html');
                 leftView.loadPage('left-page-1.html');
+                $('#zip').attr('checked', false);
+                $('#city').attr('checked', false);
+                $('#state').attr('checked', false);
                 userKey = JSON.parse(data).data;
             }).fail(function(err) {
 

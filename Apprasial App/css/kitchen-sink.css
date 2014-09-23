@@ -3,6 +3,11 @@
   width: 320px;
   border-right: 1px solid #b2b2b2;
 }
+html, body, #map-canvas {
+ height: 100%;
+ margin: 0; 
+ padding: 0;
+ }
 
 .logout{
   float:right;
