@@ -14,6 +14,14 @@ var cityObjects;
 var stateObjects;
 var type;
 var currentOrderArray;
+var map;
+var currentLocationMarker;
+var destinationMarker;
+var dirService;
+var dirRenderer;
+var drivingDistance;
+var drivingDuration;
+
 
 //initalize login
 login();
@@ -78,6 +86,52 @@ function getCityObjects(orderArr){
   return cityObjectArray;
 }
 
+function convertTime(time){
+  var minutes = 0;
+  var hours = 0;
+  var timeString = "";
+  if(time>60){
+    minutes = time/60;
+  }
+  if(minutes>60){
+    hours = minutes/60
+  }
+  var seconds;
+  var minPlurality = " minutes";
+  var secondPlurality = " seconds";
+  var hourPlurality = " hours";
+  if(seconds<2){
+    secondPlurality = " second";
+  }
+  timeString = seconds+secondPlurality;
+  
+  if(minutes>0){
+    seconds = (minutes %1)*60;
+    if(minutes<2){
+      minPlurality = " minute";
+    }
+    if(seconds<2){
+      secondPlurality = " second";
+    }
+    timeString = minutes.toString().split(".")[0]+ minPlurality +" ";
+    timeString = timeString+seconds.toString().split(".")[0]+secondPlurality;
+  }
+  if(hours>0){
+    minutes = (hours %1)*60;
+    if(minutes<2){
+      minPlurality = " minute";
+    }
+    if(hours<2){
+      hourPlurality = " hour";
+    }
+    timeString = hours.toString().split(".")[0]+hourPlurality+" ";
+    timeString = timeString+minutes.toString().split(".")[0]+minPlurality +" ";
+    timeString = timeString+seconds.toString().split(".")[0]+secondPlurality;
+  }
+
+  return timeString
+}
+
 
   $$(document).on('click', '.load-orders', function(e){
           
@@ -85,20 +139,14 @@ function getCityObjects(orderArr){
                     leftView.loadPage('order-page.html');
                     mainView.loadPage('map-page.html');
                     if(type == 'zip'){
-                    var ordersToLoad = zipObjects[this.id].zipOrderArray;
-                    console.log(ordersToLoad);
-                    loadOrders(ordersToLoad);
-                    console.log("zip");
+                      var ordersToLoad = zipObjects[this.id].zipOrderArray;
+                      loadOrders(ordersToLoad);
                     }else if(type == 'state'){
-                    console.log("state");
-                    var ordersToLoad = stateObjects[this.id].stateOrderArray;
-                    console.log(ordersToLoad);
-                    loadOrders(ordersToLoad);
+                      var ordersToLoad = stateObjects[this.id].stateOrderArray;
+                      loadOrders(ordersToLoad);
                     }else if(type == 'city'){
-                    console.log("city");
-                    var ordersToLoad = cityObjects[this.id].cityOrderArray;
-                    console.log(ordersToLoad);
-                    loadOrders(ordersToLoad);
+                      var ordersToLoad = cityObjects[this.id].cityOrderArray;
+                      loadOrders(ordersToLoad);
                     }
                     currentOrderArray = ordersToLoad;
                     
@@ -114,9 +162,12 @@ myApp.onPageAfterAnimation('order-page', function(page) {
                         "<li>"+
                         "<div id="+i+" class=\"item-content item-link show-marker\">"+
                           "<div class=\"item-inner\">"+
+                            "<div class=\"item-title-row\">"+
                                 "<div class=\"item-title\"> Order "+ordersToLoad[i].orderID+"</div>"+ 
-                                " <div class=\"order-ammount\">  Due Date:"+ordersToLoad[i].order_due_date+
                             "</div>"+
+                            "<div class=\"item-subtitle\">  Due Date:"+ordersToLoad[i].order_due_date+"</div>"+
+                            "<div id=\"distance-"+i+"\"class=\"\"></div>"+
+                            "<div id=\"duration-"+i+"\"class=\"\"></div>"+
                           "</div>"+    
                         "</li>"
                       )
@@ -130,10 +181,10 @@ $$('.back').on('click', function() {
 });
 
 
-  $$(document).on('click', '.show-marker', function(e){
+$$(document).on('click', '.show-marker', function(e){
     var currentOrder = currentOrderArray[this.id];
     console.log(currentOrder.order_addres+", "+currentOrder.city+", "+currentOrder.state);
-
+    var currId= this.id;
       $.ajax({
           url: 'https://maps.googleapis.com/maps/api/geocode/json?address='+currentOrder.order_addres+", "+currentOrder.city+", "+currentOrder.state+'&key=AIzaSyBjm_gt77HZ8-aFj8DvnnVqTOyg54fNMFU',
             beforeSend: function(xhr) {
@@ -142,20 +193,46 @@ $$('.back').on('click', function() {
             }
       }).done(function(data) {
             myApp.hidePreloader();
+           if(destinationMarker){
+            destinationMarker.setMap(null);
+           }
             geocodeData = JSON.parse(data).results;
             console.log(geocodeData[0].geometry.location.lat+", "+geocodeData[0].geometry.location.lng);
+            var myLatlng = new google.maps.LatLng(geocodeData[0].geometry.location.lat,geocodeData[0].geometry.location.lng);
+            console.log(myLatlng);
+            destinationMarker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            title: 'Your Destination!'
+           });
+           destinationMarker.setMap(map);
+           var request = {
+                    origin: currentLocationMarker.position,
+                    destination: destinationMarker.position,
+                    travelMode: google.maps.TravelMode.DRIVING
+                };
+                dirService.route(request, function(result, status) {
+                    if (status == google.maps.DirectionsStatus.OK) {
+                        console.log(result.routes[0].legs[0].distance.value);
+                        console.log(currId);
+                        document.getElementById('duration-'+currId).className="item-text";
+                        document.getElementById('duration-'+currId).innerHTML="Driving Duration: "+convertTime(result.routes[0].legs[0].duration.value);
+                        
+                        dirRenderer.setDirections(result);
+                    }
+               });
         }).fail(function(err) {
            myApp.hidePreloader();
            console.log('error: '+err);
            //TODO add error function
         });
-  });
+});
 
 
 myApp.onPageAfterAnimation('map-page', function(page) {
-console.log("map");
 
-
+ dirService = new google.maps.DirectionsService();
+ dirRenderer = new google.maps.DirectionsRenderer({suppressMarkers: true});
 
 var x = document.getElementById("demo");
     function getLocation() {
@@ -186,16 +263,19 @@ var x = document.getElementById("demo");
         console.log(position);
         var mapOptions = {
           center: { lat: position.coords.latitude, lng: position.coords.longitude},
-          zoom: 15
+          zoom: 15,
+          disableDefaultUI: true,
+          zoomControl: true
         };
         console.log(document.getElementById('map-canvas'));
-        var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+        map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+        dirRenderer.setMap(map);
         var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
 
-        var marker = new google.maps.Marker({
+        currentLocationMarker = new google.maps.Marker({
             position: myLatlng,
             map: map,
-            title: 'Hello World!'
+            title: 'You are Here!'
         });
         myApp.hidePreloader();
      }
