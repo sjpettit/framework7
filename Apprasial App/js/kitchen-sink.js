@@ -22,7 +22,7 @@ var dirRenderer;
 var drivingDistance;
 var drivingDuration;
 var prevOrderDiv;
-var drivingSteps = "<li>"+"<div class=\"item-content\">"+"<div class=\"item-inner\">"+"<div class=\"item-title\"> Driving Instructions </div></div></div></li>";
+var drivingSteps;
 
 
 //initalize login
@@ -240,6 +240,7 @@ $$(document).on('click', '.show-marker', function(e){
                         console.log(result);
                         console.log(currId);
                         console.log(result.routes[0].legs[0].steps[0].instructions);
+                        drivingSteps = "<li>"+"<div class=\"item-content\">"+"<div class=\"item-inner\">"+"<div class=\"item-title\"> Driving Instructions </div></div></div></li>";
                         for(var i = 0; i<result.routes[0].legs[0].steps.length; i++){
                             drivingSteps = drivingSteps + "<li>"+"<div class=\"item-content\">"+"<div class=\"item-inner\">"+"<div class=\"item-text\">"+result.routes[0].legs[0].steps[i].instructions+"</div></div></div></li>";
                         }
