@@ -11,6 +11,7 @@ var mainView = myApp.addView('.view-main', {
     // Enable Dynamic Navbar for this view
     dynamicNavbar: true
 });
+mainView.loadPage('tabs.html');
 // Add another view, which is in right panel
 var rightView = myApp.addView('.view-right', {
     // Enable Dynamic Navbar for this view
@@ -28,6 +29,8 @@ $$(document).on('ajaxComplete', function () {
 
 // Callbacks for specific pages when it initialized
 /* ===== Modals Page events  ===== */
+
+
 myApp.onPageInit('modals', function (page) {
     $$('.demo-alert').on('click', function () {
         myApp.alert('Hello!');

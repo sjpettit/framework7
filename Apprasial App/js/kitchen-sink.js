@@ -21,6 +21,8 @@ var dirService;
 var dirRenderer;
 var drivingDistance;
 var drivingDuration;
+var prevOrderDiv;
+var drivingSteps = "<li>"+"<div class=\"item-content\">"+"<div class=\"item-inner\">"+"<div class=\"item-title\"> Driving Instructions </div></div></div></li>";
 
 
 //initalize login
@@ -34,6 +36,7 @@ var leftView = myApp.addView('.view-left', {
     // Because we use fixed-through navbar we can enable dynamic navbar
     dynamicNavbar: true
 });
+
 
 function getStateObjects(orderArr){
   var stateObjectArray = new Array();
@@ -100,17 +103,18 @@ function convertTime(time){
   var minPlurality = " minutes";
   var secondPlurality = " seconds";
   var hourPlurality = " hours";
-  if(seconds<2){
+  if(seconds<2&&seconds>=1){
     secondPlurality = " second";
   }
+  seconds = time;
   timeString = seconds+secondPlurality;
   
   if(minutes>0){
     seconds = (minutes %1)*60;
-    if(minutes<2){
+    if(minutes<2&&minutes>=1){
       minPlurality = " minute";
     }
-    if(seconds<2){
+    if(seconds<2&&seconds>=1){
       secondPlurality = " second";
     }
     timeString = minutes.toString().split(".")[0]+ minPlurality +" ";
@@ -118,10 +122,10 @@ function convertTime(time){
   }
   if(hours>0){
     minutes = (hours %1)*60;
-    if(minutes<2){
+    if(minutes<2&&minutes>=1){
       minPlurality = " minute";
     }
-    if(hours<2){
+    if(hours<2&&hours>=1){
       hourPlurality = " hour";
     }
     timeString = hours.toString().split(".")[0]+hourPlurality+" ";
@@ -138,6 +142,7 @@ function convertTime(time){
 
                     leftView.loadPage('order-page.html');
                     mainView.loadPage('map-page.html');
+
                     if(type == 'zip'){
                       var ordersToLoad = zipObjects[this.id].zipOrderArray;
                       loadOrders(ordersToLoad);
@@ -156,6 +161,7 @@ function convertTime(time){
 function loadOrders(ordersToLoad){
 
 myApp.onPageAfterAnimation('order-page', function(page) {
+      $('#back-button').removeClass("invisible");
       $('#order-list').html("");
                     for(var i = 0;i<ordersToLoad.length;i++){
                       $('#order-list').append(               
@@ -165,7 +171,8 @@ myApp.onPageAfterAnimation('order-page', function(page) {
                             "<div class=\"item-title-row\">"+
                                 "<div class=\"item-title\"> Order "+ordersToLoad[i].orderID+"</div>"+ 
                             "</div>"+
-                            "<div class=\"item-subtitle\">  Due Date:"+ordersToLoad[i].order_due_date+"</div>"+
+                            "<div class=\"item-subtitle\">  Due Date: "+ordersToLoad[i].order_due_date+"</div>"+
+                            "<div class=\"item-subtitle\">  City: "+ordersToLoad[i].city+", "+ordersToLoad[i].state+ "</div>"+
                             "<div id=\"distance-"+i+"\"class=\"\"></div>"+
                             "<div id=\"duration-"+i+"\"class=\"\"></div>"+
                           "</div>"+    
@@ -181,9 +188,24 @@ $$('.back').on('click', function() {
 });
 
 
+myApp.onPageAfterAnimation('order-info', function(page) {
+        prevOrderDiv.className = "item-content";
+        $('#order-info').append(prevOrderDiv);
+        $('#order-info').append(drivingSteps);
+
+});
+
+
 $$(document).on('click', '.show-marker', function(e){
+    if(prevOrderDiv){
+        prevOrderDiv.className = "item-content item-link show-marker";
+        if(prevOrderDiv == document.getElementById(this.id)){
+            leftView.loadPage('order-info.html');
+            mainView.loadPage('tab-page.html');
+
+        }
+    }
     var currentOrder = currentOrderArray[this.id];
-    console.log(currentOrder.order_addres+", "+currentOrder.city+", "+currentOrder.state);
     var currId= this.id;
       $.ajax({
           url: 'https://maps.googleapis.com/maps/api/geocode/json?address='+currentOrder.order_addres+", "+currentOrder.city+", "+currentOrder.state+'&key=AIzaSyBjm_gt77HZ8-aFj8DvnnVqTOyg54fNMFU',
@@ -200,9 +222,11 @@ $$(document).on('click', '.show-marker', function(e){
             console.log(geocodeData[0].geometry.location.lat+", "+geocodeData[0].geometry.location.lng);
             var myLatlng = new google.maps.LatLng(geocodeData[0].geometry.location.lat,geocodeData[0].geometry.location.lng);
             console.log(myLatlng);
+            var image = 'img/MapMarker_Flag5_Chartreuse.png';
             destinationMarker = new google.maps.Marker({
             position: myLatlng,
             map: map,
+            icon: image,
             title: 'Your Destination!'
            });
            destinationMarker.setMap(map);
@@ -213,8 +237,12 @@ $$(document).on('click', '.show-marker', function(e){
                 };
                 dirService.route(request, function(result, status) {
                     if (status == google.maps.DirectionsStatus.OK) {
-                        console.log(result.routes[0].legs[0].distance.value);
+                        console.log(result);
                         console.log(currId);
+                        console.log(result.routes[0].legs[0].steps[0].instructions);
+                        for(var i = 0; i<result.routes[0].legs[0].steps.length; i++){
+                            drivingSteps = drivingSteps + "<li>"+"<div class=\"item-content\">"+"<div class=\"item-inner\">"+"<div class=\"item-text\">"+result.routes[0].legs[0].steps[i].instructions+"</div></div></div></li>";
+                        }
                         document.getElementById('duration-'+currId).className="item-text";
                         document.getElementById('duration-'+currId).innerHTML="Driving Duration: "+convertTime(result.routes[0].legs[0].duration.value);
                         
@@ -226,6 +254,8 @@ $$(document).on('click', '.show-marker', function(e){
            console.log('error: '+err);
            //TODO add error function
         });
+        document.getElementById(currId).className = "item-content item-link show-marker active";
+        prevOrderDiv = document.getElementById(currId);
 });
 
 
@@ -260,21 +290,20 @@ var x = document.getElementById("demo");
       }
     }
     function showPosition(position){ 
-        console.log(position);
         var mapOptions = {
           center: { lat: position.coords.latitude, lng: position.coords.longitude},
           zoom: 15,
           disableDefaultUI: true,
           zoomControl: true
         };
-        console.log(document.getElementById('map-canvas'));
         map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
         dirRenderer.setMap(map);
         var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-
+        var image = 'img/MapMarker_Marker_Inside_Pink.png';
         currentLocationMarker = new google.maps.Marker({
             position: myLatlng,
             map: map,
+            icon: image,
             title: 'You are Here!'
         });
         myApp.hidePreloader();
@@ -285,11 +314,23 @@ var x = document.getElementById("demo");
 
 });
 
+myApp.onPageBeforeAnimation('order-search', function(page) {
+        $('#back-button').addClass("invisible");
+
+});
+
+
+myApp.onPageBeforeAnimation('left-page-1', function(page) {
+                $('#zip').attr('checked', false);
+                $('#city').attr('checked', false);
+                $('#state').attr('checked', false);
+                mainView.loadPage('main-page-1.html');
+});
+
 
 
 myApp.onPageInit('order-search', function(page) {
     // Add views
-    
     document.getElementById('view-left').className = "view view-left navbar-through toolbar-through"
     document.getElementById('view-main').className = "view view-main navbar-through toolbar-through frame-shift"
     document.getElementById('view-navbar').className = "view view-navbar";
@@ -314,15 +355,10 @@ myApp.onPageInit('order-search', function(page) {
                   $('#group-list').html("");
                 }
                 if(this.checked){
-                  console.log(this);
                   $('#city').attr('checked', false);
                   $('#zip').attr('checked', false);
                   $('#group-list').html("");
-                  console.log("State: " +this.checked);
-                  console.log("zip: " +$('#zip').checked);
-                  console.log("city: " +$('#city').checked);
                   stateObjects = getStateObjects(orderArray);
-                  console.log(stateObjects);
                   for(var i = 0; i<stateObjects.length;i++){
                     var pluralityString;
                     if(stateObjects[i].stateOrderArray.length>1){
@@ -349,15 +385,10 @@ myApp.onPageInit('order-search', function(page) {
                   $('#group-list').html("");
                 }
                 if(this.checked){
-                  console.log(this);
                   $('#state').attr('checked', false);
                   $('#zip').attr('checked', false);
-                  console.log("State: " +$('#state').checked);
-                  console.log("zip: " +$('#zip').checked);
-                  console.log("city: " +this.checked);
                   $('#group-list').html("");
                   cityObjects = getCityObjects(orderArray);
-                  console.log(cityObjects);
                   for(var i = 0; i<cityObjects.length;i++){
                     var pluralityString;
                     if(cityObjects[i].cityOrderArray.length>1){
@@ -381,19 +412,14 @@ myApp.onPageInit('order-search', function(page) {
                
               });
               $("#zip").change(function(event){
-                console.log(this);
                 if(!this.checked && !$('#state').checked && !$('#city').checked){
                   $('#group-list').html("");
                 }
                 if(this.checked){
                   $('#city').attr('checked', false);
                   $('#state').attr('checked', false);
-                  console.log("State: " +$('#state').checked);
-                  console.log("zip: " +this.checked);
-                  console.log("city: " +$('#city').checked);
                   $('#group-list').html("");
                   zipObjects = getZipObjects(orderArray);
-                  console.log(zipObjects);
                   for(var i = 0; i<zipObjects.length;i++){
                     var pluralityString;
                     if(zipObjects[i].zipOrderArray.length>1){
@@ -418,7 +444,6 @@ myApp.onPageInit('order-search', function(page) {
                
               })
             }
-            console.log(orderArray);
         }).fail(function(err) {
                 myApp.alert('Server Connection Lost', 'Error:', function() {
                     myApp.hidePreloader();
@@ -435,7 +460,6 @@ myApp.onPageInit('order-search', function(page) {
     });
 
 
-    console.log(userKey);
 
 });
 // Show/hide preloader for remote ajax loaded pages
@@ -474,9 +498,6 @@ function login() {
                 myApp.hidePreloader();
                 mainView.loadPage('main-page-1.html');
                 leftView.loadPage('left-page-1.html');
-                $('#zip').attr('checked', false);
-                $('#city').attr('checked', false);
-                $('#state').attr('checked', false);
                 userKey = JSON.parse(data).data;
             }).fail(function(err) {
 

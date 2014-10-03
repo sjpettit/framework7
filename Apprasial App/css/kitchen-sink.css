@@ -9,6 +9,11 @@ html, body, #map-canvas {
  padding: 0;
  }
 
+
+.active{
+  background-color: #F2F2F2;
+}
+
 .logout{
   float:right;
 }
@@ -52,6 +57,10 @@ html, body, #map-canvas {
 .hidden {
     display: none;
 }
+.invisible {
+    visibility: hidden;
+}
+
 .index-page{
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
