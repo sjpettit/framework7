@@ -24,6 +24,11 @@ var drivingDuration;
 var prevOrderDiv;
 var drivingSteps;
 
+      tinymce.init({
+          selector: "textarea"
+       });
+
+
 
 //initalize login
 login();
@@ -195,6 +200,21 @@ myApp.onPageAfterAnimation('order-info', function(page) {
 
 });
 
+
+myApp.onPageBeforeAnimation('tab-page', function(page) {
+        tinymce.init({
+          selector: "notes"
+       });
+
+var myDropzone;
+window.onload = function () {
+myDropzone = document.getElementById("myDropzone").dropzone;
+}
+function processQueue(){
+myDropzone.processQueue();
+}
+
+});
 
 $$(document).on('click', '.show-marker', function(e){
     if(prevOrderDiv){
