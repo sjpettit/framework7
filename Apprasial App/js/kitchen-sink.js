@@ -201,18 +201,18 @@ myApp.onPageAfterAnimation('order-info', function(page) {
 });
 
 
-myApp.onPageBeforeAnimation('tab-page', function(page) {
+var myDropzone;
+function processQueue(){
+    myDropzone.processQueue();
+}
+
+myApp.onPageAfterAnimation('tab-page', function(page) {
         tinymce.init({
           selector: "notes"
        });
 
-var myDropzone;
-window.onload = function () {
-myDropzone = document.getElementById("myDropzone").dropzone;
-}
-function processQueue(){
-myDropzone.processQueue();
-}
+myDropzone = new Dropzone("#myDropzone", { url: "/file/post"});
+console.log(myDropzone);
 
 });
 
