@@ -23,10 +23,7 @@ var drivingDistance;
 var drivingDuration;
 var prevOrderDiv;
 var drivingSteps;
-
-      tinymce.init({
-          selector: "textarea"
-       });
+var tabTracking = 4;
 
 
 
@@ -192,6 +189,43 @@ $$('.back').on('click', function() {
   leftView.goBack();
 });
 
+$$(document).on('click', '.prev', function() {
+    if($(".next").hasClass("invisible")){
+    $(".next").removeClass("invisible");
+    $(".next").addClass("link");
+  }
+  if(tabTracking>4){
+    $("#tab-icon-"+tabTracking).addClass("hidden");
+    $("#tab-icon-"+tabTracking).removeClass("tab-link");
+    $("#tab-icon-"+(tabTracking-4)).addClass("tab-link");
+    $("#tab-icon-"+(tabTracking-4)).removeClass("hidden");
+    tabTracking--;
+    if(tabTracking == 4){
+      $(".prev").removeClass("link");
+      $(".prev").addClass("invisible");
+    }
+  }
+
+});
+
+$$(document).on('click', '.next', function() {
+  if($(".prev").hasClass("invisible")){
+    $(".prev").removeClass("invisible");
+    $(".prev").addClass("link");
+  }
+  if(tabTracking<12){
+    tabTracking++;
+    $("#tab-icon-"+(tabTracking-4)).removeClass("tab-link");
+    $("#tab-icon-"+(tabTracking-4)).addClass("hidden");
+    $("#tab-icon-"+tabTracking).removeClass("hidden");
+    $("#tab-icon-"+tabTracking).addClass("tab-link");
+    if(tabTracking == 11){
+      $(".next").removeClass("link");
+      $(".next").addClass("invisible");
+    }
+  }
+
+});
 
 myApp.onPageAfterAnimation('order-info', function(page) {
         prevOrderDiv.className = "item-content";
@@ -358,6 +392,7 @@ myApp.onPageInit('order-search', function(page) {
     document.getElementById('view-toolbar').className = "view view-toolbar";
     $.ajax({
             url: 'http://localhost:3000/api/v1/getOrderDetail?user='+userKey+'&apiKey=1dca7720-395c-11e4-916c-0800200c9a66',
+            dataType:"text",
             beforeSend: function(xhr) {
                 myApp.showPreloader();
                 xhr.overrideMimeType("text/plain; charset=x-user-defined");
@@ -365,6 +400,7 @@ myApp.onPageInit('order-search', function(page) {
         })
         .done(function(data) {
             myApp.hidePreloader();
+            console.log(data);
             orderArray = JSON.parse(data).data;
             if(orderArray.length>0){
               $(".welcome").html("Welcome, "+orderArray[0].order_party_name);
@@ -507,16 +543,17 @@ xmlhttp.onreadystatechange = function() {
 
 function login() {
     myApp.modalLogin('Enter your username and password', 'Login: ', function(username, password) {
-
         $.ajax({
                 url: "http://localhost:3000/api/v1/checkUserCredential?userName=" + username + '&password=' + password + '&apiKey=df5cb700-395b-11e4-916c-0800200c9a66',
                 beforeSend: function(xhr) {
                     myApp.showPreloader();
                     xhr.overrideMimeType("text/plain; charset=x-user-defined");
+                    
                 }
             })
             .done(function(data) {
                 myApp.hidePreloader();
+                console.log(data);
                 mainView.loadPage('main-page-1.html');
                 leftView.loadPage('left-page-1.html');
                 userKey = JSON.parse(data).data;
