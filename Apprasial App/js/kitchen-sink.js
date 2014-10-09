@@ -23,7 +23,9 @@ var drivingDistance;
 var drivingDuration;
 var prevOrderDiv;
 var drivingSteps;
-var tabTracking = 4;
+var tabTracking = 4; // variable tracking the last tab number 
+var numOfTabs = 4; // constant for the number of tabs visible
+var tabLength;
 
 
 
@@ -193,37 +195,42 @@ $$(document).on('click', '.prev', function() {
     if($(".next").hasClass("invisible")){
     $(".next").removeClass("invisible");
     $(".next").addClass("link");
+    
   }
   if(tabTracking>4){
     $("#tab-icon-"+tabTracking).addClass("hidden");
     $("#tab-icon-"+tabTracking).removeClass("tab-link");
-    $("#tab-icon-"+(tabTracking-4)).addClass("tab-link");
-    $("#tab-icon-"+(tabTracking-4)).removeClass("hidden");
+    $("#tab-icon-"+(tabTracking-numOfTabs)).addClass("tab-link");
+    $("#tab-icon-"+(tabTracking-numOfTabs)).removeClass("hidden");
     tabTracking--;
-    if(tabTracking == 4){
+    if(tabTracking == numOfTabs){
       $(".prev").removeClass("link");
       $(".prev").addClass("invisible");
     }
   }
-
 });
 
 $$(document).on('click', '.next', function() {
+  console.log(tabTracking);
   if($(".prev").hasClass("invisible")){
     $(".prev").removeClass("invisible");
     $(".prev").addClass("link");
   }
-  if(tabTracking<12){
+  if(tabTracking <= tabLength){
     tabTracking++;
-    $("#tab-icon-"+(tabTracking-4)).removeClass("tab-link");
-    $("#tab-icon-"+(tabTracking-4)).addClass("hidden");
+    $("#tab-icon-"+(tabTracking-numOfTabs)).removeClass("tab-link");
+    $("#tab-icon-"+(tabTracking-numOfTabs)).addClass("hidden");
     $("#tab-icon-"+tabTracking).removeClass("hidden");
     $("#tab-icon-"+tabTracking).addClass("tab-link");
-    if(tabTracking == 11){
+    if(tabTracking == tabLength){
       $(".next").removeClass("link");
       $(".next").addClass("invisible");
     }
   }
+
+  $$(document).on('click', '.tab-link', function() {
+    $(".hidden.active").removeClass("active");
+  });
 
 });
 
@@ -241,12 +248,13 @@ function processQueue(){
 }
 
 myApp.onPageAfterAnimation('tab-page', function(page) {
+        tabLength = $("#tab-selector").children().length-2;
         tinymce.init({
           selector: "notes"
        });
 
-myDropzone = new Dropzone("#myDropzone", { url: "/file/post"});
-console.log(myDropzone);
+myDropzone = new Dropzone("#myDropzone", { url: "http://127.0.0.1:3000/api/v1/uploadFile?apiKey=2AC86B2C-C32B5-7EA-E6DC-26D35519C00t"});
+
 
 });
 
@@ -273,9 +281,7 @@ $$(document).on('click', '.show-marker', function(e){
             destinationMarker.setMap(null);
            }
             geocodeData = JSON.parse(data).results;
-            console.log(geocodeData[0].geometry.location.lat+", "+geocodeData[0].geometry.location.lng);
             var myLatlng = new google.maps.LatLng(geocodeData[0].geometry.location.lat,geocodeData[0].geometry.location.lng);
-            console.log(myLatlng);
             var image = 'img/MapMarker_Flag5_Chartreuse.png';
             destinationMarker = new google.maps.Marker({
             position: myLatlng,
@@ -291,9 +297,6 @@ $$(document).on('click', '.show-marker', function(e){
                 };
                 dirService.route(request, function(result, status) {
                     if (status == google.maps.DirectionsStatus.OK) {
-                        console.log(result);
-                        console.log(currId);
-                        console.log(result.routes[0].legs[0].steps[0].instructions);
                         drivingSteps = "<li>"+"<div class=\"item-content\">"+"<div class=\"item-inner\">"+"<div class=\"item-title\"> Driving Instructions </div></div></div></li>";
                         for(var i = 0; i<result.routes[0].legs[0].steps.length; i++){
                             drivingSteps = drivingSteps + "<li>"+"<div class=\"item-content\">"+"<div class=\"item-inner\">"+"<div class=\"item-text\">"+result.routes[0].legs[0].steps[i].instructions+"</div></div></div></li>";
@@ -400,7 +403,6 @@ myApp.onPageInit('order-search', function(page) {
         })
         .done(function(data) {
             myApp.hidePreloader();
-            console.log(data);
             orderArray = JSON.parse(data).data;
             if(orderArray.length>0){
               $(".welcome").html("Welcome, "+orderArray[0].order_party_name);
@@ -553,7 +555,6 @@ function login() {
             })
             .done(function(data) {
                 myApp.hidePreloader();
-                console.log(data);
                 mainView.loadPage('main-page-1.html');
                 leftView.loadPage('left-page-1.html');
                 userKey = JSON.parse(data).data;
