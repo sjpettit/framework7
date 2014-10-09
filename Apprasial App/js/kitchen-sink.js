@@ -515,6 +515,7 @@ myApp.onPageInit('order-search', function(page) {
         document.getElementById('view-navbar').className = "view view-navbar hidden";
         document.getElementById('view-toolbar').className = "view view-toolbar hidden";
         mainView.loadPage('login.html');
+        tabTracking = numOfTabs;
         login();
     });
 
