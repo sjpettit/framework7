@@ -26,7 +26,7 @@ var drivingSteps;
 var tabTracking = 4; // variable tracking the last tab number 
 var numOfTabs = 4; // constant for the number of tabs visible
 var tabLength;
-
+var orderID;
 
 
 //initalize login
@@ -253,7 +253,7 @@ myApp.onPageAfterAnimation('tab-page', function(page) {
           selector: "notes"
        });
 
-myDropzone = new Dropzone("#myDropzone", { url: "http://127.0.0.1:3000/api/v1/uploadFile?apiKey=2AC86B2C-C32B5-7EA-E6DC-26D35519C00t"});
+myDropzone = new Dropzone("#myDropzone", { url: "http://127.0.0.1:3000/api/v1/uploadFile?apiKey=2AC86B2C-C32B5-7EA-E6DC-26D35519C00t&orderID="+orderID});
 
 
 });
@@ -262,6 +262,7 @@ $$(document).on('click', '.show-marker', function(e){
     if(prevOrderDiv){
         prevOrderDiv.className = "item-content item-link show-marker";
         if(prevOrderDiv == document.getElementById(this.id)){
+            orderID = currentOrderArray[this.id].orderID;
             leftView.loadPage('order-info.html');
             mainView.loadPage('tab-page.html');
 
@@ -347,6 +348,8 @@ var x = document.getElementById("demo");
               break;
       }
     }
+
+
     function showPosition(position){ 
         var mapOptions = {
           center: { lat: position.coords.latitude, lng: position.coords.longitude},
@@ -544,6 +547,11 @@ xmlhttp.onreadystatechange = function() {
 }
 
 
+  $$(document).on('click', '.dropzone', function(e){
+    $("#myDropzone").click();
+  });
+
+
 function login() {
     myApp.modalLogin('Enter your username and password', 'Login: ', function(username, password) {
         $.ajax({
@@ -575,6 +583,9 @@ function login() {
             });
 
 
-    });
+    },function(username, password) {
+      login();
+    }
+    );
 
 }

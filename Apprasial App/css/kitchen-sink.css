@@ -9,10 +9,10 @@ html, body, #map-canvas {
  padding: 0;
  }
 
-
+/*
 .active{
   background-color: #F2F2F2;
-}
+}*/
 
 .logout{
   float:right;
