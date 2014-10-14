@@ -29,6 +29,7 @@ var tabLength;
 var orderID;
 
 
+
 //initalize login
 login();
 // Add main view
@@ -169,7 +170,7 @@ myApp.onPageAfterAnimation('order-page', function(page) {
       $('#order-list').html("");
                     for(var i = 0;i<ordersToLoad.length;i++){
                       $('#order-list').append(               
-                        "<li>"+
+                        "<li id=li-"+i+">"+
                         "<div id="+i+" class=\"item-content item-link show-marker\">"+
                           "<div class=\"item-inner\">"+
                             "<div class=\"item-title-row\">"+
@@ -235,7 +236,7 @@ $$(document).on('click', '.next', function() {
 });
 
 myApp.onPageAfterAnimation('order-info', function(page) {
-        prevOrderDiv.className = "item-content";
+        prevOrderDiv.children[0].className = "item-content";
         $('#order-info').append(prevOrderDiv);
         $('#order-info').append(drivingSteps);
 
@@ -250,7 +251,8 @@ function processQueue(){
 myApp.onPageAfterAnimation('tab-page', function(page) {
         tabLength = $("#tab-selector").children().length-2;
         tinymce.init({
-          selector: "notes"
+          selector: "notes",
+          skin:"custom"
        });
 
 myDropzone = new Dropzone("#myDropzone", { url: "http://127.0.0.1:3000/api/v1/uploadFile?apiKey=2AC86B2C-C32B5-7EA-E6DC-26D35519C00t&orderID="+orderID});
@@ -260,14 +262,15 @@ myDropzone = new Dropzone("#myDropzone", { url: "http://127.0.0.1:3000/api/v1/up
 
 $$(document).on('click', '.show-marker', function(e){
     if(prevOrderDiv){
-        prevOrderDiv.className = "item-content item-link show-marker";
-        if(prevOrderDiv == document.getElementById(this.id)){
+        prevOrderDiv.children[0].className = "item-content item-link show-marker";
+        if(prevOrderDiv == document.getElementById("li-"+this.id)){
             orderID = currentOrderArray[this.id].orderID;
             leftView.loadPage('order-info.html');
             mainView.loadPage('tab-page.html');
 
         }
     }
+    
     var currentOrder = currentOrderArray[this.id];
     var currId= this.id;
       $.ajax({
@@ -313,8 +316,8 @@ $$(document).on('click', '.show-marker', function(e){
            console.log('error: '+err);
            //TODO add error function
         });
-        document.getElementById(currId).className = "item-content item-link show-marker active";
-        prevOrderDiv = document.getElementById(currId);
+        document.getElementById(currId).className = "item-content item-link show-marker active-link";
+        prevOrderDiv = document.getElementById("li-"+currId);
 });
 
 
@@ -553,7 +556,8 @@ xmlhttp.onreadystatechange = function() {
 
 
 function login() {
-    myApp.modalLogin('Enter your username and password', 'Login: ', function(username, password) {
+$$(".index-page").addClass(document.body.className);
+    var modal = myApp.modalLogin('Enter your username and password', 'Login: ', function(username, password) {
         $.ajax({
                 url: "http://localhost:3000/api/v1/checkUserCredential?userName=" + username + '&password=' + password + '&apiKey=df5cb700-395b-11e4-916c-0800200c9a66',
                 beforeSend: function(xhr) {
@@ -581,11 +585,13 @@ function login() {
                     });
                 }
             });
-
+            
 
     },function(username, password) {
       login();
     }
     );
-
+    console.log(modal);
+    $$(modal).children().addClass(document.body.className);
+    $$(modal.children[1]).children().addClass(document.body.className);
 }

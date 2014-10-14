@@ -225,131 +225,169 @@
                </div>
             </div>
             <div id="tab-2" class="tab">
-               <div class="content-block">
-                  <div class="list-block">
-                     <ul>
-                        <li>
-                           <div class="item-content">
-                              <div class="item-inner">
-                                 <p>
-                                 <div style="width: 10%;">
-                                    I
-                                 </div>
-                                 <div style="width: 20%;">
-                                    <select>
-                                       <option></option>
-                                       <option>did</option>
-                                       <option>did not</option>
-                                    </select>
-                                    <div style="width: 70%;"></div>
-                                 </div>
-                                 </p>
-                                 <P>
-                                    analyze the contract for sale for the subject purchase transaction.
-                                    <br/>
-                                    Explain the results of the analysis of the contract for sale or why the analysis was not performed.
-                                 </P>
-                              </div>
-                           </div>
-                        </li>
-                        <li>
-                           <div class="item-content">
-                              <div class="item-inner">
-                                 <div style="width:20%;">
-                                    Contract Price $
-                                 </div>
-                                 <div style="width:35%;">
-                                    <input type="text" />
-                                 </div>
-                                 <div style="width:20%;">
-                                    Date of Contract
-                                 </div>
-                                 <div style="width:25%;">
-                                    <input type="date" placeholder="DateofContract" value="2014-04-30"/>
-                                 </div>
-                              </div>
-                           </div>
-                        </li>
-                        <li>
-                           <div class="item-content">
-                              <div class="item-inner">
-                                 <div style="width:55%;">
-                                    Is the property seller the owner of public record?
-                                 </div>
-                                 <div style="width: 45%;">
-                                    <select>
-                                       <option></option>
-                                       <option>Yes</option>
-                                       <option>No</option>
-                                    </select>
-                                 </div>
-                              </div>
-                           </div>
-                        </li>
-                        <li>
-                           <div class="item-content">
-                              <div class="item-inner">
-                                 <div style="width:22%;">
-                                    Data Sources
-                                 </div>
-                                 <div style="width: 78%;">
-                                    <input type="text" />
-                                 </div>
-                              </div>
-                           </div>
-                        </li>
-                        <li>
-                           <div class="item-content">
-                              <div class="item-inner">
-                                 <div style="width:80%;">
-                                    Is there any financial assistance (loan charges, sale concessions, gift or downpayment assistance, etc.)
-                                    to be paid by any party on behalf of the borrower?
-                                 </div>
-                                 <div style="width:20%;">
-                                    <select>
-                                       <option></option>
-                                       <option>Yes</option>
-                                       <option>No</option>
-                                    </select>
-                                 </div>
-                              </div>
-                           </div>
-                        </li>
-                        <li>
-                           <div class="item-content">
-                              <div class="item-inner">
-                                 <div style="width:60%;">
-                                    If Yes, report the total dollar amount and describe the items to be paid.
-                                 </div>
-                                 <div style="width:40%;">
-                                    <input type="text" />
-                                 </div>
-                              </div>
-                           </div>
-                        </li>
-                        <li>
-                           <div class="item-content">
-                              <div class="item-inner">
-                                 <div style="width:100%;">
-                                    <input type="text" />
-                                 </div>
-                              </div>
-                           </div>
-                        </li>
-                        <li>
-                           <div class="item-content">
-                              <div class="item-inner">
-                                 <div style="width:100%;">
-                                    <input type="text" />
-                                 </div>
-                              </div>
-                           </div>
-                        </li>
-                     </ul>
+               				<div class="content-block-title">
+					Contract
+				</div>
+				<div class="list-block">
+					<ul>
+						<li>
+							<div class="item-content">
+								<div class="item-inner">
 
-                  </div>
-               </div>
-            </div>
+									<div style="width: 5%;">
+										I
+									</div>
+									<div style="width: 10%;">
+										<label class="label-checkbox item-content">
+											<input id="didChk"type="radio" name="ContracktChk1" value="Did" onClick="clearContractGroup1(this);"/>
+											<div class="item-media">
+												<i class="icon icon-form-checkbox"></i>&nbsp;&nbsp;&nbsp;did
+											</div></label>
+
+									</div>
+									<div style="width: 10%;">
+										<label class="label-checkbox item-content">
+											<input id="didnotChk" type="radio" name="ContracktChk1" value="Didnot" onClick="clearContractGroup1(this);"	/>
+											<div class="item-media">
+												<i class="icon icon-form-checkbox">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;did&nbsp;not</i>
+											</div></label>
+
+									</div>
+
+									<div style="width: 70%;">
+										analyze the contract for sale for the subject purchase transaction.
+										<br/>
+										Explain the results of the
+
+										analysis of the contract for sale or why the analysis was not performed.
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="item-content">
+								<div class="item-inner">
+									<div style="width:20%;">
+										Contract Price $
+									</div>
+									<div style="width:35%;">
+										<input type="text" id="txtContractPrice" />
+									</div>
+									<div style="width:20%;">
+										Date of Contract
+									</div>
+									<div style="width:25%;">
+										<input type="date" placeholder="DateofContract" value="2014-04-30"/>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="item-content">
+								<div class="item-inner">
+									<div style="width:43%;">
+										Is the property seller the owner of public record?
+									</div>
+									<div style="width: 10%;"></div>
+									<div style="width: 10%;">
+										<label class="label-checkbox item-content">
+											<input id="ownerYesChk" type="radio" name="ContracktChk2" value="Yes" onClick="clearContractGroup2(this);"/>
+											<div class="item-media">
+												<i class="icon icon-form-checkbox"></i>&nbsp;&nbsp;&nbsp;Yes
+											</div></label>
+
+									</div>
+									<div style="width: 10%;">
+										<label class="label-checkbox item-content">
+											<input id="ownerNoChk" type="radio" name="ContracktChk2" value="No" onClick="clearContractGroup2(this);"	/>
+											<div class="item-media">
+												<i class="icon icon-form-checkbox">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No</i>
+											</div></label>
+
+									</div>
+									<div style="width: 27%;"></div>
+								</div>
+							</div>
+
+						</li>
+						<li>
+							<div class="item-content">
+								<div class="item-inner">
+									<div style="width:22%;">
+										Data Sources
+									</div>
+									<div style="width: 78%;">
+										<input type="text" id="txtContractDataSources" />
+									</div>
+
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="item-content">
+								<div class="item-inner">
+									<div style="width:53%;">
+										Is there any financial assistance (loan charges, sale concessions,
+										<br/>
+										gift or downpayment assistance, etc.)
+										to be paid by any party
+										<br/>
+										on behalf of the borrower?
+									</div>
+									<div style="width: 10%;">
+										<label class="label-checkbox item-content">
+											<input id="confinAsstYes" type="radio" name="ContracktChk3" value="Yes" onClick="clearContractGroup3(this);"/>
+											<div class="item-media">
+												<i class="icon icon-form-checkbox"></i>&nbsp;&nbsp;&nbsp;Yes
+											</div></label>
+
+									</div>
+									<div style="width: 10%;">
+										<label class="label-checkbox item-content">
+											<input id="confinAsstNo" type="radio" name="ContracktChk3" value="No" onClick="clearContractGroup3(this);"	/>
+											<div class="item-media">
+												<i class="icon icon-form-checkbox">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No</i>
+											</div></label>
+
+									</div>
+									<div style="width: 27%;"></div>
+
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="item-content">
+								<div class="item-inner">
+									<div style="width:55%;">
+										If Yes, report the total dollar amount and describe the items to be paid.
+									</div>
+									<div style="width:45%;">
+										<input type="text" id="txtDescItmsPaid" />
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="item-content">
+								<div class="item-inner">
+									<div style="width:100%;">
+										<input type="text" />
+									</div>
+								</div>
+							</div>
+						</li>
+						<li>
+							<div class="item-content">
+								<div class="item-inner">
+									<input type="text" />
+									<div style="width:100%;"></div>
+								</div>
+							</div>
+						</li>
+					</ul>
+
+				</div>
+        </div>
             <div id="tab-3" class="tab">
                <div class="content-block">
                				<div class="content-block-title">
@@ -881,19 +919,14 @@
                                     Zoning Compliance
                                  </div>
                                  <div class="item-input">
-                                    <ul>
-                                       <li>
                                           <select>
                                              <option>Legal</option>
                                              <option>Legal Nonconforming (Grandfathered Use)</option>
                                              <option>No Zoning</option>
                                              <option>Illegal (describe)</option>
                                           </select>
-                                       </li>
-                                       <li>
                                           <textarea type="text" placeholder="If Illegal, describe"></textarea>
-                                       </li>
-                                    </ul>
+
                                  </div>
                               </div>
                            </div>

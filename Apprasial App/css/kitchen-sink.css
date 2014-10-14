@@ -10,7 +10,7 @@ html, body, #map-canvas {
  }
 
 /*
-.active{
+.active-link{
   background-color: #F2F2F2;
 }*/
 
@@ -71,7 +71,7 @@ html, body, #map-canvas {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-image: url("../img/Background_11_by_ELENADUDINA.jpg");
+  /*background-image: url("../img/Background_11_by_ELENADUDINA.jpg");*/
   -webkit-transform: translate3d(0, 0, 0);
   -ms-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
