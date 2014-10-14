@@ -413,7 +413,7 @@ myApp.onPageInit('order-search', function(page) {
             myApp.hidePreloader();
             orderArray = JSON.parse(data).data;
             if(orderArray.length>0){
-              $(".welcome").html("Welcome, "+firstName+" "+lastName);
+              $(".welcome").html("<i class=\"fa fa-user\"></i>"+firstName+" "+lastName);
               
               
               
