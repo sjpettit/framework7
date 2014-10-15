@@ -148,7 +148,12 @@ function convertTime(time){
 
                     leftView.loadPage('order-page.html');
                     mainView.loadPage('map-page.html');
-
+                    $("#tool-icon-1").addClass("hidden");
+                    $("#tool-icon-1").removeClass("tab-link");
+                    $("#tool-icon-2").addClass("hidden");
+                    $("#tool-icon-2").removeClass("tab-link");
+                    $("#tool-icon-3").addClass("hidden");
+                    $("#tool-icon-3").removeClass("tab-link");
                     if(type == 'zip'){
                       var ordersToLoad = zipObjects[this.id].zipOrderArray;
                       loadOrders(ordersToLoad);
@@ -387,6 +392,12 @@ myApp.onPageBeforeAnimation('order-search', function(page) {
 
 
 myApp.onPageBeforeAnimation('left-page-1', function(page) {
+                    $("#tool-icon-1").removeClass("hidden");
+                    $("#tool-icon-1").addClass("tab-link");
+                    $("#tool-icon-2").removeClass("hidden");
+                    $("#tool-icon-2").addClass("tab-link");
+                    $("#tool-icon-3").removeClass("hidden");
+                    $("#tool-icon-3").addClass("tab-link");
                 $('#zip').attr('checked', false);
                 $('#city').attr('checked', false);
                 $('#state').attr('checked', false);
@@ -413,7 +424,7 @@ myApp.onPageInit('order-search', function(page) {
             myApp.hidePreloader();
             orderArray = JSON.parse(data).data;
             if(orderArray.length>0){
-              $(".welcome").html("<i class=\"fa fa-user\"></i>"+firstName+" "+lastName);
+              $(".welcome").html("<i class=\"icon-label fa fa-user\"></i> <span class=\"welcome-label\">"+firstName+" "+lastName+"<\span>");
               
               
               
@@ -596,7 +607,6 @@ $$(".index-page").addClass(document.body.className);
       login();
     }
     );
-    console.log(modal);
     $$(modal).children().addClass(document.body.className);
     $$(modal.children[1]).children().addClass(document.body.className);
 }

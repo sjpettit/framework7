@@ -594,7 +594,7 @@ html.android .page-from-center-to-right {
 }
 .navbar,
 .toolbar {
-  height: 44px;
+  height: 55px;
   width: 100%;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -942,16 +942,16 @@ html.retina.ios-gt-7 .toolbar {
   position: absolute;
 }
 .navbar-through .page-content {
-  padding-top: 44px;
+  padding-top: 55px;
 }
 .toolbar-through .page-content {
-  padding-bottom: 44px;
+  padding-bottom: 55px;
 }
 .navbar-fixed .page-content {
   padding-top: 44px;
 }
 .toolbar-fixed .page-content {
-  padding-bottom: 44px;
+  padding-bottom: 55px;
 }
 .hidden-navbar .navbar {
   -webkit-transition-duration: 400ms;
@@ -1133,7 +1133,7 @@ html.retina.ios-gt-7 .searchbar {
 .navbar-through .page > .searchbar,
 .navbar-fixed > .searchbar,
 .navbar-through > .searchbar {
-  top: 44px;
+  top: 55px;
 }
 .navbar-fixed .page > .searchbar ~ .page-content,
 .navbar-through .page > .searchbar ~ .page-content,
