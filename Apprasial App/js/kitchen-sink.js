@@ -29,6 +29,7 @@ var tabLength;
 var orderID;
 var firstName;
 var lastName;
+var sendData = {};
 
 
 //initalize login
@@ -195,6 +196,12 @@ myApp.onPageAfterAnimation('order-page', function(page) {
 }
 
 $$('.back').on('click', function() {
+        $('.save').addClass("hidden");
+        $('.submit').addClass("hidden");
+        $('.send-back').addClass("hidden");
+        $('.save').removeClass("link");
+        $('.submit').removeClass("link");
+        $('.send-back').removeClass("link");
   leftView.goBack();
   tabTracking = numOfTabs;
 });
@@ -237,13 +244,19 @@ $$(document).on('click', '.next', function() {
   }
 
   $$(document).on('click', '.tab-link', function() {
-    $(".hidden.active").removeClass("active");
+    $(".hidden.active").not('.tool-link').removeClass("active");
   });
 
 });
 
 myApp.onPageAfterAnimation('order-info', function(page) {
         prevOrderDiv.children[0].className = "item-content";
+        $('.save').removeClass("hidden");
+        $('.submit').removeClass("hidden");
+        $('.send-back').removeClass("hidden");
+        $('.save').addClass("link");
+        $('.submit').addClass("link");
+        $('.send-back').addClass("link");
         $('#order-info').append(prevOrderDiv);
         $('#order-info').append(drivingSteps);
 
@@ -266,6 +279,31 @@ myDropzone = new Dropzone("#myDropzone", { url: "http://127.0.0.1:3000/api/v1/up
 
 
 });
+
+/////////
+$$(document).on('click', '.save', function(e){
+      console.log($("#city").value);
+      console.log(orderID);
+
+var data ={};
+data.city = "city";
+data.state = "state";
+sendData.formData = JSON.stringify(data);
+console.log(sendData);
+      $.ajax({
+          url: 'http://localhost:3000/api/v1/formData?orderID='+orderID+'&apiKey=f5812148-64e5-45d1-9f44-ce51b5a9b741',
+          type: "POST",
+          contentType:'applicaton/x-www-form-urlencoded',
+          data: sendData,
+            beforeSend: function(xhr) {
+                myApp.showPreloader();
+                xhr.overrideMimeType("text/plain; charset=x-user-defined");
+            }
+      }).done(function(data) {
+            myApp.hidePreloader();
+      });
+});
+///////////
 
 $$(document).on('click', '.show-marker', function(e){
     if(prevOrderDiv){
@@ -385,10 +423,6 @@ var x = document.getElementById("demo");
 
 });
 
-myApp.onPageBeforeAnimation('order-search', function(page) {
-        $('#back-button').addClass("invisible");
-
-});
 
 
 myApp.onPageBeforeAnimation('left-page-1', function(page) {
@@ -398,22 +432,21 @@ myApp.onPageBeforeAnimation('left-page-1', function(page) {
                     $("#tool-icon-2").addClass("tab-link");
                     $("#tool-icon-3").removeClass("hidden");
                     $("#tool-icon-3").addClass("tab-link");
+                    $('#back-button').addClass("invisible");
+
                 $('#zip').attr('checked', false);
                 $('#city').attr('checked', false);
                 $('#state').attr('checked', false);
                 mainView.loadPage('main-page-1.html');
 });
 
-
-
-myApp.onPageInit('order-search', function(page) {
-    // Add views
-    document.getElementById('view-left').className = "view view-left navbar-through toolbar-through"
-    document.getElementById('view-main').className = "view view-main navbar-through toolbar-through frame-shift"
-    document.getElementById('view-navbar').className = "view view-navbar";
-    document.getElementById('view-toolbar').className = "view view-toolbar";
-    $.ajax({
-            url: 'http://localhost:3000/api/v1/getOrderDetail?orderID='+userKey+'&apiKey=1dca7720-395c-11e4-916c-0800200c9a66',
+$$(document).on('click', '#tool-icon-1', function(e){
+                  $('#zip').attr('checked', false);
+                $('#city').attr('checked', false);
+                $('#state').attr('checked', false);
+  $('#group-list').html("");
+  $.ajax({
+            url: 'http://localhost:3000/api/v1/getOrderDetail?orderPartyID='+userKey+'&apiKey=1dca7720-395c-11e4-916c-0800200c9a66&orderStatus=0',       
             dataType:"text",
             beforeSend: function(xhr) {
                 myApp.showPreloader();
@@ -423,7 +456,76 @@ myApp.onPageInit('order-search', function(page) {
         .done(function(data) {
             myApp.hidePreloader();
             orderArray = JSON.parse(data).data;
-            if(orderArray.length>0){
+            if(orderArray == 'NO-ORDER-FOUND'){
+              orderArray = [];
+            }
+        })
+      });
+
+$$(document).on('click', '#tool-icon-2', function(e){
+                  $('#zip').attr('checked', false);
+                $('#city').attr('checked', false);
+                $('#state').attr('checked', false);
+  $('#group-list').html("");
+  $.ajax({
+            url: 'http://localhost:3000/api/v1/getOrderDetail?orderPartyID='+userKey+'&apiKey=1dca7720-395c-11e4-916c-0800200c9a66&orderStatus=1',       
+            dataType:"text",
+            beforeSend: function(xhr) {
+                myApp.showPreloader();
+                xhr.overrideMimeType("text/plain; charset=x-user-defined");
+            }
+        })
+        .done(function(data) {
+            myApp.hidePreloader();
+            orderArray = JSON.parse(data).data;
+            if(orderArray == 'NO-ORDER-FOUND'){
+              orderArray = [];
+            }
+        })
+      });
+
+$$(document).on('click', '#tool-icon-3', function(e){
+                  $('#zip').attr('checked', false);
+                $('#city').attr('checked', false);
+                $('#state').attr('checked', false);
+  $('#group-list').html("");
+  $.ajax({
+            url: 'http://localhost:3000/api/v1/getOrderDetail?orderPartyID='+userKey+'&apiKey=1dca7720-395c-11e4-916c-0800200c9a66&orderStatus=2',       
+            dataType:"text",
+            beforeSend: function(xhr) {
+                myApp.showPreloader();
+                xhr.overrideMimeType("text/plain; charset=x-user-defined");
+            }
+        })
+        .done(function(data) {
+            myApp.hidePreloader();
+            orderArray = JSON.parse(data).data;
+            if(orderArray == 'NO-ORDER-FOUND'){
+              orderArray = [];
+            }
+        })
+      });
+
+myApp.onPageInit('main-page-1', function(page) {
+    // Add views
+    document.getElementById('view-left').className = "view view-left navbar-through toolbar-through"
+    document.getElementById('view-main').className = "view view-main navbar-through toolbar-through frame-shift"
+    document.getElementById('view-navbar').className = "view view-navbar";
+    document.getElementById('view-toolbar').className = "view view-toolbar";
+    $.ajax({
+            url: 'http://localhost:3000/api/v1/getOrderDetail?orderPartyID='+userKey+'&apiKey=1dca7720-395c-11e4-916c-0800200c9a66&orderStatus=0',       
+            dataType:"text",
+            beforeSend: function(xhr) {
+                myApp.showPreloader();
+                xhr.overrideMimeType("text/plain; charset=x-user-defined");
+            }
+        })
+        .done(function(data) {
+            myApp.hidePreloader();
+            orderArray = JSON.parse(data).data;
+            if(orderArray == 'NO-ORDER-FOUND'){
+              orderArray = [];
+            }
               $(".welcome").html("<i class=\"icon-label fa fa-user\"></i> <span class=\"welcome-label\">"+firstName+" "+lastName+"<\span>");
               
               
@@ -458,6 +560,7 @@ myApp.onPageInit('order-search', function(page) {
                 type='state';
               }
               });
+
               $("#city").change(function(event){
                 if(!this.checked && !$('#zip').checked && !$('#state').checked){
                   $('#group-list').html("");
@@ -487,8 +590,8 @@ myApp.onPageInit('order-search', function(page) {
                   }
                   type='city';
               }
-               
               });
+
               $("#zip").change(function(event){
                 if(!this.checked && !$('#state').checked && !$('#city').checked){
                   $('#group-list').html("");
@@ -521,7 +624,6 @@ myApp.onPageInit('order-search', function(page) {
               }
                
               })
-            }
         }).fail(function(err) {
                 myApp.alert('Server Connection Lost', 'Error:', function() {
                     myApp.hidePreloader();
@@ -529,6 +631,12 @@ myApp.onPageInit('order-search', function(page) {
                 });
         });
     $$('.logout').on('click', function() {
+        $('.save').addClass("hidden");
+        $('.submit').addClass("hidden");
+        $('.send-back').addClass("hidden");
+        $('.save').removeClass("link");
+        $('.submit').removeClass("link");
+        $('.send-back').removeClass("link");
         document.getElementById('view-left').className = "view view-left navbar-through toolbar-through hidden"
         document.getElementById('view-main').className = "view view-main navbar-through toolbar-through"
         document.getElementById('view-navbar').className = "view view-navbar hidden";

@@ -28,10 +28,10 @@ html, body, #map-canvas {
   left: -ms-calc(40%);
   left: calc(40%);
 }
-/*
+
 .active-link{
   background-color: #F2F2F2;
-}*/
+}
 
 .logout{
   float:right;
