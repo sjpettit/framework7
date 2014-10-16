@@ -292,12 +292,11 @@ sendData.formData = JSON.stringify(data);
 console.log(sendData);
       $.ajax({
           url: 'http://localhost:3000/api/v1/formData?orderID='+orderID+'&apiKey=f5812148-64e5-45d1-9f44-ce51b5a9b741',
+ contentType: 'application/json',
           type: "POST",
-          contentType:'applicaton/x-www-form-urlencoded',
-          data: sendData,
+          data: JSON.stringify(sendData),
             beforeSend: function(xhr) {
                 myApp.showPreloader();
-                xhr.overrideMimeType("text/plain; charset=x-user-defined");
             }
       }).done(function(data) {
             myApp.hidePreloader();
